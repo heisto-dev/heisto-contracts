@@ -1,9 +1,9 @@
 {
-  "observedAtUtc": "2026-11-13T10:26:47.414Z",
+  "observedAtUtc": "2026-11-13T10:42:30.669Z",
   "network": "mainnet-beta",
   "commitment": "finalized",
   "genesisHash": "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d",
-  "contextSlot": 468892587,
+  "contextSlot": 468896972,
   "programId": "FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi",
   "programDataAddress": "4p1Fi2NFpqscAWcdBsrze3WgCW23HXdSnP8hgw2sFFwV",
   "deploymentSlot": "465622182",
