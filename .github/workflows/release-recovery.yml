@@ -1,0 +1,86 @@
+name: Recover original release build
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  recover:
+    strategy:
+      fail-fast: false
+      matrix:
+        cargo_toolchain: [1.88.0, nightly-2025-07-17]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      SOURCE_COMMIT: 358de359889de10843745d4124114a7db54b54cd
+      BUILD_IMAGE: solanafoundation/solana-verifiable-build@sha256:12fd4c0a0790f0fc41ef74b0cdb6bccc167ba6137eb1adb749bac649481c86bd
+      CARGO_TOOLCHAIN: ${{ matrix.cargo_toolchain }}
+    steps:
+      - name: Check out comparison tooling
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          path: tooling
+      - name: Check out exact source revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 358de359889de10843745d4124114a7db54b54cd
+          persist-credentials: false
+          path: source
+      - name: Fetch the exact original Agave release
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/release-tools"
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            https://github.com/anza-xyz/agave/releases/download/v4.3.2/solana-release-x86_64-unknown-linux-gnu.tar.bz2 \
+            --output "$RUNNER_TEMP/agave.tar.bz2"
+          echo "5c9599d7fa397375df69d58e8d4f550ee45463dd6d1ecad9e5a1f053ce8e0933  $RUNNER_TEMP/agave.tar.bz2" | sha256sum --check
+          tar -xjf "$RUNNER_TEMP/agave.tar.bz2" -C "$RUNNER_TEMP/release-tools"
+          echo "fecfad827f44c0ff788117788bef8812ccdf7ed85c02910558eaa540b8914a03  $RUNNER_TEMP/release-tools/solana-release/bin/cargo-build-sbf" | sha256sum --check
+      - name: Reproduce original external Cargo and platform compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            -v "$PWD/source:/build" \
+            -v "$RUNNER_TEMP/release-tools:/release-tools:ro" \
+            -e CARGO_TOOLCHAIN \
+            -w /build "$BUILD_IMAGE" bash -euo pipefail -c '
+              rustup toolchain install "$CARGO_TOOLCHAIN" --profile minimal
+              /release-tools/solana-release/bin/cargo-build-sbf --install-only --tools-version v1.57
+              PLATFORM="/root/.cache/solana/v1.57/platform-tools/rust"
+              test -x "$PLATFORM/bin/rustc"
+              CARGO_BIN="$(rustup which --toolchain "$CARGO_TOOLCHAIN" cargo)"
+              export PATH="$(dirname "$CARGO_BIN"):/release-tools/solana-release/bin:$PATH"
+              export RUSTC="$PLATFORM/bin/rustc"
+              export RUSTDOC="$PLATFORM/bin/rustdoc"
+              cargo --version
+              "$RUSTC" --version --verbose
+              /release-tools/solana-release/bin/cargo-build-sbf --version
+              /release-tools/solana-release/bin/cargo-build-sbf \
+                --no-rustup-override --tools-version v1.57 --arch v3 --optimize-size \
+                --manifest-path /build/programs/heisto/Cargo.toml -- --locked
+            '
+          git -C source diff --exit-code -- Cargo.toml Cargo.lock programs/heisto
+      - name: Compare rebuilt program with Mainnet snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tooling/scripts/compare-build.py \
+            source/target/deploy/heisto.so \
+            tooling/evidence/source-verification-snapshot.json \
+            "$SOURCE_COMMIT" \
+            "$RUNNER_TEMP/source-comparison.json"
+      - name: Preserve comparison and compiler evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-recovery-${{ matrix.cargo_toolchain }}
+          path: |
+            ${{ runner.temp }}/source-comparison.json
+            source/target/deploy/heisto.so
+            source/target/.rustc_info.json
+            source/target/sbpfv3-solana-solana/release/.fingerprint/**/*.json
+          if-no-files-found: warn
+          retention-days: 30
