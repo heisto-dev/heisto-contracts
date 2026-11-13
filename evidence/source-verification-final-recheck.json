@@ -1,0 +1,23 @@
+{
+  "observedAtUtc": "2026-11-13T10:53:22.076Z",
+  "network": "mainnet-beta",
+  "commitment": "finalized",
+  "genesisHash": "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d",
+  "contextSlot": 468900010,
+  "programId": "FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi",
+  "programDataAddress": "4p1Fi2NFpqscAWcdBsrze3WgCW23HXdSnP8hgw2sFFwV",
+  "deploymentSlot": "465622182",
+  "upgradeAuthority": "8kAVnHKm756KgzyQAuU36TDitpDx4snQepXwStPpc9Sb",
+  "allocatedPayloadBytes": 312584,
+  "normalizedProgramSha256": "059c48c52301b0653af169ad2b06640a0ff1ef1283478d2c6cb448f6e7ea8d8e",
+  "retainedBinaryBytes": 312584,
+  "retainedBinarySha256": "1b22fc202819dbf42e24f54be2b7c20725aeca3118b8c2aeb11ad38fff8ca0f8",
+  "retainedBinaryMatchesCurrentChain": true,
+  "publicVerifier": {
+    "url": "https://verify.osec.io/status/FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi",
+    "isVerified": false,
+    "repository": null,
+    "commit": null
+  },
+  "scope": "Read-only chain snapshot and retained-binary comparison; not a source rebuild or audit."
+}
