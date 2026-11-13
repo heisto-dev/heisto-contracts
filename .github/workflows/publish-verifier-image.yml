@@ -1,0 +1,109 @@
+name: Publish tested Heisto verifier image
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      IMAGE: ghcr.io/heisto-dev/heisto-verifier-cargo188:v1.57
+    steps:
+      - name: Check out pinned verification tooling
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 0f88a272647de5295aa2f0a164ea363daa009911
+          persist-credentials: false
+          path: tooling
+      - name: Check out exact public program source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 358de359889de10843745d4124114a7db54b54cd
+          persist-credentials: false
+          path: source
+      - name: Build original release environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build \
+            --label org.opencontainers.image.source=https://github.com/heisto-dev/heisto-contracts \
+            --label org.opencontainers.image.description="Pinned Cargo 1.88.0 and SBF v1.57 environment for reproducing Heisto Mainnet bytecode" \
+            -f tooling/verification/Dockerfile -t "$IMAGE" tooling/verification
+      - name: Install pinned public verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            https://github.com/solana-foundation/solana-verifiable-build/releases/download/v0.5.2/solana-verify-0.5.2-linux \
+            --output "$RUNNER_TEMP/solana-verify"
+          echo "b9d5ccce9634dc14269cab3e7a58649bc141b3306e7735a94478c936341f211f  $RUNNER_TEMP/solana-verify" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/solana-verify"
+      - name: Rebuild and verify before publishing
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/solana-verify" build \
+            --base-image "$IMAGE" --arch v3 \
+            --cargo-build-sbf-args="--no-rustup-override --tools-version v1.57 --optimize-size"
+          git diff --exit-code -- Cargo.toml Cargo.lock programs/heisto
+          python3 ../tooling/scripts/compare-build.py \
+            target/deploy/heisto.so \
+            ../tooling/evidence/source-verification-recheck.json \
+            358de359889de10843745d4124114a7db54b54cd \
+            "$RUNNER_TEMP/source-comparison.json"
+      - name: Authenticate for this job only
+        env:
+          GHCR_JOB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$GHCR_JOB_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      - name: Publish tested image and record immutable digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker push "$IMAGE"
+          docker image inspect "$IMAGE" --format '{{index .RepoDigests 0}}' > "$RUNNER_TEMP/published-image-digest.txt"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          digest = (root / "published-image-digest.txt").read_text().strip()
+          if not digest.startswith("ghcr.io/heisto-dev/heisto-verifier-cargo188@sha256:"):
+              raise SystemExit("Unexpected published image digest")
+          comparison = json.loads((root / "source-comparison.json").read_text())
+          if comparison["matchesSnapshot"] is not True:
+              raise SystemExit("Source build comparison did not pass")
+          proof = {
+              "image": digest,
+              "imageTag": os.environ["IMAGE"],
+              "sourceCommit": "358de359889de10843745d4124114a7db54b54cd",
+              "dockerfileCommit": "0f88a272647de5295aa2f0a164ea363daa009911",
+              "buildRecipe": [
+                  "--arch", "v3",
+                  "--cargo-build-sbf-args=--no-rustup-override --tools-version v1.57 --optimize-size"
+              ],
+              "sourceBuildMatchesSnapshot": True,
+              "rawSha256": comparison["builtRawSha256"],
+              "anonymousPullVerified": False,
+              "run": "https://github.com/" + os.environ["GITHUB_REPOSITORY"] + "/actions/runs/" + os.environ["GITHUB_RUN_ID"]
+          }
+          (root / "published-image.json").write_text(json.dumps(proof, indent=2) + "\n")
+          print(json.dumps(proof, indent=2))
+          PY
+      - name: Remove registry credentials
+        if: always()
+        run: docker logout ghcr.io || true
+      - name: Preserve public verification image proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: published-verifier-image-proof
+          path: |
+            ${{ runner.temp }}/published-image.json
+            ${{ runner.temp }}/source-comparison.json
+          if-no-files-found: warn
+          retention-days: 30
