@@ -1,0 +1,16 @@
+{
+  "checkedAtUtc": "2026-11-13T10:26:06.145829+00:00",
+  "sourceRepository": "https://github.com/heisto-dev/heisto-contracts",
+  "sourceCommit": "358de359889de10843745d4124114a7db54b54cd",
+  "programId": "FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi",
+  "chainSnapshotUtc": "2026-11-13T10:12:45.942Z",
+  "chainContextSlot": 468888677,
+  "deploymentSlot": "465622182",
+  "builtBytes": 312416,
+  "builtRawSha256": "75f9306c32fed398061c159cc47f9dbf7fa2c8515d7397b0d718883c328a0b7f",
+  "builtNormalizedSha256": "b7759bc6daae90091a688570cff48a84b3e8b571fc05a3c7af41503b0a52bbc8",
+  "onChainNormalizedSha256": "059c48c52301b0653af169ad2b06640a0ff1ef1283478d2c6cb448f6e7ea8d8e",
+  "matchesSnapshot": false,
+  "publicExplorerVerification": "not established by this build",
+  "audit": "not an independent security audit"
+}
