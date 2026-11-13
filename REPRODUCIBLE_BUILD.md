@@ -30,10 +30,12 @@ Its executable hash and finalized Mainnet hash are identical:
 `059c48c52301b0653af169ad2b06640a0ff1ef1283478d2c6cb448f6e7ea8d8e`.
 
 - [Live public verification status](https://verify.osec.io/status/FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi)
+- [Solscan program: VERIFIED](https://solscan.io/account/FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi)
 - [Completed independent verifier job](https://verify.osec.io/job/db4c4fef-db04-40b6-accb-75e6be09527d)
 - [Registered metadata transaction](https://solscan.io/tx/2CyXBqP9aXimrsjksCWrP37RF58Nh9t79VSp2xQ1931yPw8veLo23s8cusevF4QJBBj9PHS1VZxcbyL9Ue1q8w3f)
 - [Immutable public build-image package](https://github.com/users/heisto-dev/packages/container/package/heisto-verifier-cargo188)
 
+Solscan was directly inspected after registration and displays **Program is verified: VERIFIED**. Its embedded **Security.txt: FALSE** remains separate.
 Explorer interfaces can cache or index verification status at different times.
 The live registry above is the directly checked verification result.
 The program remains upgradeable. **Verification is not an independent security
