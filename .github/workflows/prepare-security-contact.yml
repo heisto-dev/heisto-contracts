@@ -1,0 +1,127 @@
+name: Prepare unsigned security contact upgrade
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Exact public candidate commit
+        required: true
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      IMAGE: ghcr.io/heisto-dev/heisto-verifier-cargo188@sha256:23c3f9f70ae7ed175412fc817bccd44a985734f719f180ef721906663a2bd425
+      SOURCE_REF: ${{ inputs.source_ref }}
+    steps:
+      - name: Validate pinned candidate
+        shell: bash
+        run: '[[ "$SOURCE_REF" =~ ^[a-f0-9]{40}$ ]]'
+      - name: Check out public candidate without credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ inputs.source_ref }}
+          persist-credentials: false
+          path: source
+      - name: Confirm only contact metadata changed
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 358de359889de10843745d4124114a7db54b54cd
+          python3 - <<'PY'
+          import subprocess
+          from pathlib import Path
+          base = "358de359889de10843745d4124114a7db54b54cd"
+          def original(name):
+              return subprocess.check_output(["git", "show", base + ":" + name])
+          for name in ["Cargo.toml", "Cargo.lock", "programs/heisto/Cargo.toml"]:
+              assert Path(name).read_bytes() == original(name), name + " changed"
+          name = "programs/heisto/src/lib.rs"
+          addition = b'\n#[cfg(not(feature = "no-entrypoint"))]\nmod security_contact;\n'
+          current = Path(name).read_bytes()
+          assert current.count(addition) == 1
+          assert current.replace(addition, b"", 1) == original(name), "Instruction source changed"
+          print("Manifests, dependency lock and all instruction code are unchanged.")
+          PY
+      - name: Pull the public digest-pinned compiler image
+        run: docker pull "$IMAGE"
+      - name: Run native contract unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm -v "$PWD/source:/build" -w /build "$IMAGE" \
+            cargo test --locked --lib -p heisto
+      - name: Install checksum-pinned verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            https://github.com/solana-foundation/solana-verifiable-build/releases/download/v0.5.2/solana-verify-0.5.2-linux \
+            --output "$RUNNER_TEMP/solana-verify"
+          echo "b9d5ccce9634dc14269cab3e7a58649bc141b3306e7735a94478c936341f211f  $RUNNER_TEMP/solana-verify" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/solana-verify"
+      - name: Build candidate without any signing keys
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/solana-verify" build --base-image "$IMAGE" --arch v3 \
+            --cargo-build-sbf-args="--no-rustup-override --tools-version v1.57 --optimize-size"
+          git diff --exit-code -- Cargo.toml Cargo.lock programs/heisto
+      - name: Inspect metadata inside the actual executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          binary = Path("source/target/deploy/heisto.so").read_bytes()
+          begin = b"=======BEGIN SECURITY.TXT V1=======\0"
+          end = b"=======END SECURITY.TXT V1=======\0"
+          assert binary.count(begin) == 1 and binary.count(end) == 1
+          payload = binary.split(begin, 1)[1].split(end, 1)[0]
+          fields = payload.rstrip(b"\0").split(b"\0")
+          assert len(fields) == 12
+          values = {fields[i].decode(): fields[i+1].decode() for i in range(0, len(fields), 2)}
+          expected = {
+              "name": "Heisto",
+              "project_url": "https://heisto.xyz",
+              "contacts": "email:support@heisto.xyz",
+              "policy": "https://github.com/heisto-dev/heisto-contracts/blob/main/SECURITY.md",
+              "preferred_languages": "en",
+              "source_code": "https://github.com/heisto-dev/heisto-contracts"
+          }
+          assert values == expected
+          raw = hashlib.sha256(binary).hexdigest()
+          assert raw != "1b22fc202819dbf42e24f54be2b7c20725aeca3118b8c2aeb11ad38fff8ca0f8"
+          report = {
+              "programId": "FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi",
+              "sourceCommit": os.environ["SOURCE_REF"],
+              "baseDeployedSourceCommit": "358de359889de10843745d4124114a7db54b54cd",
+              "buildImage": os.environ["IMAGE"],
+              "binaryBytes": len(binary),
+              "rawSha256": raw,
+              "normalizedSha256": hashlib.sha256(binary.rstrip(b"\0")).hexdigest(),
+              "embeddedSecurityContact": values,
+              "instructionSourceUnchanged": True,
+              "dependenciesUnchanged": True,
+              "nativeUnitTestsPassed": True,
+              "deployed": False,
+              "signed": False,
+              "scope": "Unsigned candidate only. A Mainnet upgrade and renewed verification require separate approval."
+          }
+          Path(os.environ["RUNNER_TEMP"], "security-contact-candidate.json").write_text(json.dumps(report, indent=2) + "\n")
+          print(json.dumps(report, indent=2))
+          PY
+      - name: Preserve unsigned candidate and inspection
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: unsigned-security-contact-candidate
+          path: |
+            ${{ runner.temp }}/security-contact-candidate.json
+            source/target/deploy/heisto.so
+          if-no-files-found: warn
+          retention-days: 7
