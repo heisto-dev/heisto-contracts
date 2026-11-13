@@ -1,0 +1,12 @@
+{
+  "observedAtUtc": "2026-11-13T11:43:19.892Z",
+  "is_verified": true,
+  "message": "On chain program verified",
+  "on_chain_hash": "059c48c52301b0653af169ad2b06640a0ff1ef1283478d2c6cb448f6e7ea8d8e",
+  "executable_hash": "059c48c52301b0653af169ad2b06640a0ff1ef1283478d2c6cb448f6e7ea8d8e",
+  "repo_url": "https://github.com/heisto-dev/heisto-contracts/tree/358de359889de10843745d4124114a7db54b54cd",
+  "commit": "358de359889de10843745d4124114a7db54b54cd",
+  "last_verified_at": "2026-11-13T11:43:10.575721",
+  "is_frozen": false,
+  "is_closed": false
+}

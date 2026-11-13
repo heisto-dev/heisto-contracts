@@ -1,0 +1,39 @@
+{
+  "finalizedAtUtc": "2026-11-13T11:40:50.609Z",
+  "network": "mainnet-beta",
+  "programId": "FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi",
+  "programDataAddress": "4p1Fi2NFpqscAWcdBsrze3WgCW23HXdSnP8hgw2sFFwV",
+  "deploymentSlot": "465622182",
+  "authority": "8kAVnHKm756KgzyQAuU36TDitpDx4snQepXwStPpc9Sb",
+  "metadataProgramId": "verifycLy8mB96wd9wqq3WDXQwM4oU6r42Th37Db9fC",
+  "metadataPda": "25p9Vp7Pad3LekEgBnf28HdNMMMqJd9xn6MxWpGewsNG",
+  "signature": "2CyXBqP9aXimrsjksCWrP37RF58Nh9t79VSp2xQ1931yPw8veLo23s8cusevF4QJBBj9PHS1VZxcbyL9Ue1q8w3f",
+  "explorer": "https://solscan.io/tx/2CyXBqP9aXimrsjksCWrP37RF58Nh9t79VSp2xQ1931yPw8veLo23s8cusevF4QJBBj9PHS1VZxcbyL9Ue1q8w3f",
+  "finalizedSlot": 468913240,
+  "approvedCapLamports": 5000000,
+  "actualWalletDebitLamports": 2809160,
+  "actualWalletDebitSol": 0.00280916,
+  "accountRentLamports": 2804160,
+  "networkFeeLamports": 5000,
+  "sourceRepository": "https://github.com/heisto-dev/heisto-contracts",
+  "sourceCommit": "358de359889de10843745d4124114a7db54b54cd",
+  "verifierVersion": "0.5.2",
+  "args": [
+    "--base-image",
+    "ghcr.io/heisto-dev/heisto-verifier-cargo188@sha256:23c3f9f70ae7ed175412fc817bccd44a985734f719f180ef721906663a2bd425",
+    "--arch",
+    "v3",
+    "--cargo-build-sbf-args=--no-rustup-override --tools-version v1.57 --optimize-size"
+  ],
+  "programBytesUnchanged": true,
+  "upgradeAuthorityUnchanged": true,
+  "contractUpgraded": false,
+  "prizeFundsTouched": false,
+  "scope": "Authority-signed metadata registration only; independent registry rebuild completed afterwards. No contract upgrade, authority transfer or prize funding.",
+  "registryVerificationCompletedAtMetadataFinalization": false,
+  "publicVerificationAtPublication": {
+    "isVerified": true,
+    "lastVerifiedAtUtc": "2026-11-13T11:43:10.575721",
+    "job": "https://verify.osec.io/job/db4c4fef-db04-40b6-accb-75e6be09527d"
+  }
+}

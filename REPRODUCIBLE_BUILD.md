@@ -17,17 +17,27 @@ The build run, not this document, establishes whether compilation and comparison
 succeeded. A workflow merely being present or started is not a verified build.
 Read the final conclusion and comparison artifact before making a public claim.
 
-## Current result: source build matches, Explorer registration pending
+## Current result: publicly verified on Mainnet
 
 The clean build of the **exact public source commit** produces a **312,584-byte
 executable identical byte-for-byte** with the binary currently deployed on
 Mainnet. The independent GitHub runner fetched the original Agave release and
 built using Cargo 1.88.0 with platform-tools v1.57.
 
-The public OtterSec status and Solana Explorer **still show NOT VERIFIED**
-because no signed Otter Verify metadata transaction or remote verification job
-has been completed. Do not claim a green Explorer badge yet. No independent
-security audit has been performed.
+The public OtterSec verification service independently rebuilt the registered
+source and returned **`is_verified: true`** at **2026-11-13 11:43:10 UTC**.
+Its executable hash and finalized Mainnet hash are identical:
+`059c48c52301b0653af169ad2b06640a0ff1ef1283478d2c6cb448f6e7ea8d8e`.
+
+- [Live public verification status](https://verify.osec.io/status/FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi)
+- [Completed independent verifier job](https://verify.osec.io/job/db4c4fef-db04-40b6-accb-75e6be09527d)
+- [Registered metadata transaction](https://solscan.io/tx/2CyXBqP9aXimrsjksCWrP37RF58Nh9t79VSp2xQ1931yPw8veLo23s8cusevF4QJBBj9PHS1VZxcbyL9Ue1q8w3f)
+- [Immutable public build-image package](https://github.com/users/heisto-dev/packages/container/package/heisto-verifier-cargo188)
+
+Explorer interfaces can cache or index verification status at different times.
+The live registry above is the directly checked verification result.
+The program remains upgradeable. **Verification is not an independent security
+audit.** Embedded `security.txt` was not added; that is a separate binary change.
 
 | Attempt | Build parameters | Outcome |
 | --- | --- | --- |
@@ -53,15 +63,19 @@ Finalized Mainnet snapshot:
 - Deployment slot and authority were unchanged in the read-only recheck.
 
 [Machine-readable matching build comparison](evidence/matching-source-build.json) ·
-[Latest Mainnet recheck](evidence/source-verification-final-recheck.json) ·
+[Verified Mainnet recheck](evidence/verified-mainnet-recheck.json) ·
+[Public verifier response](evidence/public-verifier-status.json) ·
+[Metadata receipt and exact cost](evidence/metadata-registration-receipt.json) ·
 [Historical failed comparison](evidence/source-build-comparison.json)
 
 The earlier mismatch was caused by build inputs, including Cargo version and
 size optimization. Reproducing the old compiler alone was insufficient.
 
-**No contract upgrade, authority change, metadata transaction or SOL spending was
-performed.** The source comparison proves bytecode identity at the recorded
-Mainnet slot; it does not prove the contract is safe or immutable.
+**No contract upgrade, authority change or prize funding was performed.**
+One separately approved metadata transaction spent **0.00280916 SOL**:
+0.00280416 SOL account rent and 0.000005 SOL network fee, below the approved
+0.005 SOL cap. The deployed code and upgrade authority were checked unchanged.
+The metadata receipt is not a prize payout or a contract deployment.
 
 ## Read-only reproduction
 
@@ -129,8 +143,19 @@ Do not upload production signing keys to CI. Obtain explicit approval for an
 exact metadata transaction and spending limit before publishing it.
 
 No contract redeployment or authority transfer is required to match the source;
-the source-to-binary match is already proven. Explorer recognition remains
-separate and requires its own authorized transaction.
+the source-to-binary match is already proven. The approved metadata transaction
+has now been finalized, and the independent public registry job completed
+successfully. No additional transaction is needed for this deployment.
+
+The registered build image is pinned to:
+
+```text
+ghcr.io/heisto-dev/heisto-verifier-cargo188@sha256:23c3f9f70ae7ed175412fc817bccd44a985734f719f180ef721906663a2bd425
+```
+
+Anyone can pull it anonymously. Its public Dockerfile is pinned in the
+reproduction instructions above. The remote registry used the same digest,
+source commit, SBF v3 architecture and size-optimization arguments.
 
 ## References
 

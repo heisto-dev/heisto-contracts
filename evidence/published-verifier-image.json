@@ -1,0 +1,16 @@
+{
+  "image": "ghcr.io/heisto-dev/heisto-verifier-cargo188@sha256:23c3f9f70ae7ed175412fc817bccd44a985734f719f180ef721906663a2bd425",
+  "imageTag": "ghcr.io/heisto-dev/heisto-verifier-cargo188:v1.57",
+  "sourceCommit": "358de359889de10843745d4124114a7db54b54cd",
+  "dockerfileCommit": "0f88a272647de5295aa2f0a164ea363daa009911",
+  "buildRecipe": [
+    "--arch",
+    "v3",
+    "--cargo-build-sbf-args=--no-rustup-override --tools-version v1.57 --optimize-size"
+  ],
+  "sourceBuildMatchesSnapshot": true,
+  "rawSha256": "1b22fc202819dbf42e24f54be2b7c20725aeca3118b8c2aeb11ad38fff8ca0f8",
+  "anonymousPullVerified": true,
+  "run": "https://github.com/heisto-dev/heisto-contracts/actions/runs/43417987580",
+  "anonymousPullCheckedAtUtc": "2026-11-13T11:38:41.822Z"
+}

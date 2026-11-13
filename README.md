@@ -31,3 +31,15 @@ Native tests include fee arithmetic, verdict serialization and Ed25519 instructi
 The contract is upgradeable and settlement trusts a configured off-chain judge. Ed25519 message bindings cover the Sentinel, Attack, sequence, outcome, score and response hash. Administrative pausing does not make historical transactions disappear. Inspect current configuration/authority rather than relying on a snapshot forever.
 
 Detailed account layouts, transaction flows, threats and trust assumptions live in [heisto-docs](https://github.com/heisto-dev/heisto-docs). MIT. Security reports: support@heisto.xyz.
+
+## Public verified build
+
+The Heisto arena program `FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi`
+was independently rebuilt by the public verifier, which reported
+`is_verified: true` on 2026-11-13 UTC.
+
+- [Live registry status](https://verify.osec.io/status/FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi)
+- [Exact source, hashes, reproduction and metadata receipt](REPRODUCIBLE_BUILD.md)
+
+Verified source is not an independent audit. The contract remains upgradeable.
+This verification covers the arena program, not the separately launched token.
