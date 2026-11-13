@@ -39,7 +39,12 @@ was independently rebuilt by the public verifier, which reported
 `is_verified: true` on 2026-11-13 UTC.
 
 - [Live registry status](https://verify.osec.io/status/FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi)
-- [Exact source, hashes, reproduction and metadata receipt](REPRODUCIBLE_BUILD.md)
+- [Exact source, hashes, reproduction and metadata receipt](SECURITY_CONTACT_UPGRADE.md)
 
 Verified source is not an independent audit. The contract remains upgradeable.
 This verification covers the arena program, not the separately launched token.
+
+The current release also embeds `email:support@heisto.xyz`. Solscan was
+directly checked after the approved contact-only upgrade and shows
+**Security.txt: TRUE** and **Program is verified: VERIFIED**.
+[Upgrade scope, current hashes and actual cost](SECURITY_CONTACT_UPGRADE.md).

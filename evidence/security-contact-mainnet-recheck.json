@@ -1,0 +1,23 @@
+{
+  "observedAtUtc": "2026-11-13T12:47:53.382Z",
+  "network": "mainnet-beta",
+  "commitment": "finalized",
+  "genesisHash": "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d",
+  "contextSlot": 468931915,
+  "programId": "FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi",
+  "programDataAddress": "4p1Fi2NFpqscAWcdBsrze3WgCW23HXdSnP8hgw2sFFwV",
+  "deploymentSlot": "468930601",
+  "upgradeAuthority": "8kAVnHKm756KgzyQAuU36TDitpDx4snQepXwStPpc9Sb",
+  "allocatedPayloadBytes": 322824,
+  "normalizedProgramSha256": "95162cd3dbdf5a2061c7f5da84bfa3dc8b68003f6f3621d8cf3ea503386a4907",
+  "retainedBinaryBytes": 312912,
+  "retainedBinarySha256": "8069f3085b6c796a956fdb2eb287b977e6d628161da49934dc05fa46b7f72940",
+  "retainedBinaryMatchesCurrentChain": true,
+  "publicVerifier": {
+    "url": "https://verify.osec.io/status/FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi",
+    "isVerified": true,
+    "repository": "https://github.com/heisto-dev/heisto-contracts/tree/b562a214241e16ef10ba383b4d6d8779e7578f3e",
+    "commit": "b562a214241e16ef10ba383b4d6d8779e7578f3e"
+  },
+  "scope": "Read-only chain snapshot and retained-binary comparison; not a source rebuild or audit."
+}

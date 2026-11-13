@@ -1,0 +1,23 @@
+{
+  "programId": "FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi",
+  "sourceCommit": "b562a214241e16ef10ba383b4d6d8779e7578f3e",
+  "baseDeployedSourceCommit": "358de359889de10843745d4124114a7db54b54cd",
+  "buildImage": "ghcr.io/heisto-dev/heisto-verifier-cargo188@sha256:23c3f9f70ae7ed175412fc817bccd44a985734f719f180ef721906663a2bd425",
+  "binaryBytes": 312912,
+  "rawSha256": "8069f3085b6c796a956fdb2eb287b977e6d628161da49934dc05fa46b7f72940",
+  "normalizedSha256": "95162cd3dbdf5a2061c7f5da84bfa3dc8b68003f6f3621d8cf3ea503386a4907",
+  "embeddedSecurityContact": {
+    "name": "Heisto",
+    "project_url": "https://heisto.xyz",
+    "contacts": "email:support@heisto.xyz",
+    "policy": "https://github.com/heisto-dev/heisto-contracts/blob/main/SECURITY.md",
+    "preferred_languages": "en",
+    "source_code": "https://github.com/heisto-dev/heisto-contracts"
+  },
+  "instructionSourceUnchanged": true,
+  "dependenciesUnchanged": true,
+  "nativeUnitTestsPassed": true,
+  "deployed": false,
+  "signed": false,
+  "scope": "Unsigned candidate only. A Mainnet upgrade and renewed verification require separate approval."
+}

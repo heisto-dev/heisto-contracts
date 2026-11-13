@@ -1,4 +1,9 @@
-# Heisto source build verification
+# Heisto initial source build verification — historical
+
+**The current Mainnet release includes embedded security-contact metadata.**
+See [current source, hashes, receipts and reproduction](SECURITY_CONTACT_UPGRADE.md).
+The deployment, source commit and hashes below describe the first verified
+release before that approved upgrade; they are preserved as historical evidence.
 
 This procedure is read-only. It does not deploy or upgrade a program, change
 authority, connect a funded wallet, sign a transaction or spend SOL.
@@ -17,7 +22,7 @@ The build run, not this document, establishes whether compilation and comparison
 succeeded. A workflow merely being present or started is not a verified build.
 Read the final conclusion and comparison artifact before making a public claim.
 
-## Current result: publicly verified on Mainnet
+## Initial result: publicly verified before the security-contact upgrade
 
 The clean build of the **exact public source commit** produces a **312,584-byte
 executable identical byte-for-byte** with the binary currently deployed on

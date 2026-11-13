@@ -19,6 +19,9 @@ use anchor_lang::solana_program::sysvar::instructions::{
 };
 use anchor_lang::system_program;
 
+#[cfg(not(feature = "no-entrypoint"))]
+mod security_contact;
+
 declare_id!("FxqFvpptTRCeKCxCuxt86AJze6v16Vk9M8UZCQ8tJvbi");
 
 pub const LAMPORTS_PER_SOL: u64 = 1_000_000_000;
