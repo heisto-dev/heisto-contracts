@@ -42,7 +42,6 @@ jobs:
           set -euo pipefail
           "$RUNNER_TEMP/solana-verify" build \
             --base-image "$BUILD_IMAGE" \
-            --library-name heisto \
             --arch v3 \
             --cargo-build-sbf-args="--tools-version v1.57 --optimize-size"
           git diff --exit-code -- Cargo.lock Cargo.toml programs/heisto
