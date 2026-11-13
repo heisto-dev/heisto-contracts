@@ -1,0 +1,68 @@
+name: Read-only Mainnet source comparison
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mainnet-source-comparison
+  cancel-in-progress: false
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_COMMIT: 358de359889de10843745d4124114a7db54b54cd
+      BUILD_IMAGE: solanafoundation/solana-verifiable-build@sha256:12fd4c0a0790f0fc41ef74b0cdb6bccc167ba6137eb1adb749bac649481c86bd
+    steps:
+      - name: Check out verification tooling
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          path: tooling
+      - name: Check out exact public contract source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 358de359889de10843745d4124114a7db54b54cd
+          persist-credentials: false
+          path: source
+      - name: Install checksum-pinned official verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            https://github.com/solana-foundation/solana-verifiable-build/releases/download/v0.5.2/solana-verify-0.5.2-linux \
+            --output "$RUNNER_TEMP/solana-verify"
+          echo "b9d5ccce9634dc14269cab3e7a58649bc141b3306e7735a94478c936341f211f  $RUNNER_TEMP/solana-verify" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/solana-verify"
+          "$RUNNER_TEMP/solana-verify" --version
+      - name: Build source in the pinned official container
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/solana-verify" build \
+            --base-image "$BUILD_IMAGE" \
+            --library-name heisto \
+            --arch v3 \
+            --cargo-build-sbf-args="--tools-version v1.57"
+          git diff --exit-code -- Cargo.lock Cargo.toml programs/heisto
+      - name: Compare with finalized Mainnet snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tooling/scripts/compare-build.py \
+            source/target/deploy/heisto.so \
+            tooling/evidence/source-verification-snapshot.json \
+            "$SOURCE_COMMIT" \
+            "$RUNNER_TEMP/source-comparison.json"
+      - name: Publish comparison evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: source-build-comparison
+          path: |
+            ${{ runner.temp }}/source-comparison.json
+            source/target/deploy/heisto.so
+            tooling/evidence/source-verification-snapshot.json
+          if-no-files-found: warn
+          retention-days: 30
