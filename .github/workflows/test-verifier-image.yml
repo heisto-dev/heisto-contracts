@@ -21,6 +21,16 @@ jobs:
           path: source
       - name: Build a pinned verification image
         run: docker build -f tooling/verification/Dockerfile -t heisto-verify-cargo188:local tooling/verification
+      - name: Confirm both compiler selections inside the image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm heisto-verify-cargo188:local bash -c '
+            cargo --version
+            rustup show active-toolchain
+            "$RUSTC" --version
+            cargo-build-sbf --version
+          '
       - name: Install checksum-pinned official verifier
         shell: bash
         run: |

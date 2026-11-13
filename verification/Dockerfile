@@ -17,4 +17,5 @@ RUN set -eu; \
 # platform-tools v1.57. A newer Cargo changes the output even with this rustc.
 ENV RUSTC=/root/.cache/solana/v1.57/platform-tools/rust/bin/rustc
 ENV RUSTDOC=/root/.cache/solana/v1.57/platform-tools/rust/bin/rustdoc
+ENV RUSTUP_TOOLCHAIN=1.88.0-x86_64-unknown-linux-gnu
 ENV PATH=/root/.rustup/toolchains/1.88.0-x86_64-unknown-linux-gnu/bin:/opt/agave/solana-release/bin:${PATH}
