@@ -44,7 +44,7 @@ jobs:
             --base-image "$BUILD_IMAGE" \
             --library-name heisto \
             --arch v3 \
-            --cargo-build-sbf-args="--tools-version v1.57"
+            --cargo-build-sbf-args="--tools-version v1.57 --optimize-size"
           git diff --exit-code -- Cargo.lock Cargo.toml programs/heisto
       - name: Compare with finalized Mainnet snapshot
         shell: bash
